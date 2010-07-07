@@ -91,11 +91,23 @@ public class Instrument
         return history;
     }
 
+    /**
+     * A mutator that overwrites the entire history of this object with the
+     * list supplied via the history argument.
+     *
+     * @param history
+     */
     public void setHistory (List<String> history)
     {
         this.history = history;
     }
 
+    /**
+     * Adds a history line to the history List attached to this object.  The
+     * history line is provided in the form of a string as the first argument
+     *
+     * @param line
+     */
     public void addHistory (String line)
     {
         history.add(line);
