@@ -81,6 +81,11 @@ public class Instrument
         return properties.get(attribute);
     }
 
+    /**
+     * An accessor that retrieves all of the items stored in the history.
+     *
+     * @return history
+     */
     public List<String> getHistory ()
     {
         return history;
