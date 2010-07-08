@@ -64,121 +64,14 @@ public class InstrumentFileStore extends InstrumentStore
         return getFile(name, brand, serial);
     }
 
-    /**
-     * Serializes the data contained in the instrument into a CSV string that
-     * can be written to a file.  The data in the instrument will be written
-     * such that there will be one attribute of the instrument per column, with
-     * the first row of each column containing the key name.  The second row
-     * will contain the key value.  If the key value is an ArrayList (rather
-     * than a string, the array list will be written to the string, one item per
-     * row, starting at the second row.
-     *
-     * The attributes parameter allows you to choose a subset of the attributes
-     * specified as valid in the Instrument.attributes static array.
-     *
-     * If the omitHeadings parameter is set to true, then there will be no
-     * headings printed at the top of the CSV output.  This is useful if one is
-     * serializing multiple Instrument objects into a large list.
-     * @param instrument
-     * @param attributes
-     * @param omitHeadings
-     * @return csv-serialized instrument string
-     */
-    public static String serialize(Instrument instrument, String[] attributes,
-            boolean omitHeadings)
+    public static List<String[]> prepare(Instrument instrument, String[] attributes)
     {
-        int height = 1;
-        int width = attributes.length;
-        int headingStart = 0;
-        int dataStart = 0;
-
-        // Determine if there (a) are any ArrayLists in the Instrument and (b)
-        // what the size of the largest ArrayList in the Instrument is
-        for (String key : attributes)
-        {
-            Object value = instrument.get(key);
-
-            if (value instanceof ArrayList)
-            {
-                ArrayList<String> list = (ArrayList<String>) value;
-                height = (list.size() > height) ? list.size() : height;
-            }
-        }
-
-        // If we're adding headings to the CSV file, we'll increase the set
-        // height by one to accomodate the header and change the dataStart
-        // variable to one to allow the data to be below the header
-        if (omitHeadings == false)
-        {
-            height += 1;
-            dataStart = 1;
-        }
-
-        // Generate a two-dimensional array to be turned into our CSV file
-        String[][] table = new String[width][height];
-
-        // Insert our data into the two-dimensional array so that we have a
-        // table that we will generate a CSV file out of
-        for (int c = 0; c < width; c++)
-        {
-            String key = attributes[c];
-            Object value = instrument.get(key);
-
-            if (omitHeadings == false)
-            {
-                table[c][headingStart] = key;
-            }
-
-            if (value instanceof ArrayList)
-            {
-                ArrayList<String> list = (ArrayList<String>) value;
-                int length = list.size();
-                for (int r = dataStart; r <= length; r++)
-                {
-                    table[c][r] = list.get(r - 1);
-                }
-            } 
-            else if ("".equals(value) || " ".equals(value))
-            {
-				table[c][dataStart] = null;
-			}
-            else
-            {
-                table[c][dataStart] = (String) value;
-            }
-        }
-
-        // Serialize this table into CSV format so that we can later write the
-        // data to file
-        String buffer = "";
-
-        for (int r = 0; r < height; r++)
-        {
-            String rowBuffer = "";
-
-            for (int c = 0; c < width; c++)
-            {
-                String cell = table[c][r];
-                rowBuffer += (c != width - 1)
-                        ? cell + H_SEP : cell + V_SEP;
-            }
-
-            buffer += rowBuffer;
-        }
-
-        return buffer;
+        
     }
 
-    /**
-     * A convenience version of the InstrumentFileStore.serialize function that
-     * exports every valid property specified in the Instrument.attributes
-     * static array.  Note that with this function, headers will not be omitted.
-     * @param instrument
-     * @return csv-serialized instrument string
-     */
-    public static String serialize(Instrument instrument)
+    public static String prepare(Instrument instrument)
     {
-        return serialize(instrument, Instrument.attributes, false);
+        return serialize(instrument, Instrument.attributes);
     }
 
     /**
