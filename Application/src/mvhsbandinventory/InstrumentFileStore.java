@@ -18,10 +18,7 @@ import java.util.List;
  */
 public class InstrumentFileStore extends InstrumentStore
 {
-
     private File directory;
-    public static String H_SEP = ",";
-    public static String V_SEP = System.getProperty("line.separator");
 
     /**
      * Constructs a new InstrumentFileStore object for storing Instrument
