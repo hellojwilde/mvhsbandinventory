@@ -85,7 +85,8 @@ public class InstrumentFileStore extends InstrumentStore
 
         // If requested, prepare all of the history items for storage in the
         // CSV file; we're adding "History" as a heading before that item
-        if (includeHistory) {
+        if (includeHistory)
+        {
             List<String> history = instrument.getHistory();
             history.add(0, "History");
             String[] row = (String[]) history.toArray();
@@ -178,8 +179,9 @@ public class InstrumentFileStore extends InstrumentStore
             File file = getFile(instrument);
             writer = new CSVWriter(new FileWriter(file));
             writer.writeAll(table);
-        } catch (IOException ex) {
-        } finally {
+        } 
+        catch (IOException ex) {}
+        finally {
             // Make sure that the IO actually gets closed so that we don't have
             // any random file locks floating around
             try
@@ -252,9 +254,10 @@ public class InstrumentFileStore extends InstrumentStore
                     lines.add(line);
                 }
             }
-        } catch (FileNotFoundException ex) {
-        } catch (IOException ex) {
-        } finally
+        }
+        catch (FileNotFoundException ex) {}
+        catch (IOException ex) {}
+        finally
         {
             // Make sure that the file reader is closed down properly
             try
