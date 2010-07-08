@@ -64,14 +64,40 @@ public class InstrumentFileStore extends InstrumentStore
         return getFile(name, brand, serial);
     }
 
-    public static List<String[]> prepare(Instrument instrument, String[] attributes)
+    public static List<String[]> prepare(Instrument instrument, 
+                                         String[] attributes,
+                                         boolean includeHistory)
     {
-        
+        List<String[]> rows = new ArrayList<String[]>();
+
+        // Prepare all of the attributes for storage in the CSV file
+        for (String attribute : attributes)
+        {
+            String value = instrument.get(attribute);
+            String[] row = new String[2];
+
+            row[0] = attribute;
+            row[1] = value;
+
+            rows.add(row);
+        }
+
+        // If requested, prepare all of the history items for storage in the
+        // CSV file; we're adding "History" as a heading before that item
+        if (includeHistory) {
+            List<String> history = instrument.getHistory();
+            history.add(0, "History");
+            String[] row = (String[]) history.toArray();
+
+            rows.add(row);
+        }
+
+        return rows;
     }
 
-    public static String prepare(Instrument instrument)
+    public static List<String[]> prepare(Instrument instrument)
     {
-        return serialize(instrument, Instrument.attributes);
+        return prepare(instrument, Instrument.attributes, true);
     }
 
     /**
