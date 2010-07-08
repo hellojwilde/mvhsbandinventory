@@ -1,5 +1,6 @@
 package mvhsbandinventory;
 
+import au.com.bytecode.opencsv.CSVWriter;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -219,17 +220,26 @@ public class InstrumentFileStore extends InstrumentStore
      */
     public void update(Instrument instrument)
     {
+        CSVWriter writer = null;
+        
         try
         {
-            // Serialize the file
-            String csv = serialize(instrument);
-            // Write the serialized instrument to the appropriate file on disk
+            // Prepare the data in the Instrument object for being written to
+            // the disk drive
+            List<String[]> table = prepare(instrument);
+
+            // Use the opencsv library to write the data to the disk drive
             File file = getFile(instrument);
-            Writer pointer = new BufferedWriter(new FileWriter(file));
-            pointer.write(csv);
-            pointer.close();
-        } catch (IOException ex)
-        {
+            writer = new CSVWriter(new FileWriter(file));
+            writer.writeAll(table);
+        } catch (IOException ex) {
+        } finally {
+            // Make sure that the IO actually gets closed so that we don't have
+            // any random file locks floating around
+            try
+            {
+                writer.close();
+            } catch (IOException ex) {}
         }
     }
 
