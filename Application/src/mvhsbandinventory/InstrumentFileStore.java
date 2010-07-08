@@ -1,5 +1,6 @@
 package mvhsbandinventory;
 
+import au.com.bytecode.opencsv.CSVParser;
 import au.com.bytecode.opencsv.CSVWriter;
 import java.io.BufferedReader;
 import java.io.File;
@@ -8,6 +9,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -101,76 +103,34 @@ public class InstrumentFileStore extends InstrumentStore
 
     public static Instrument parse(List<String> rows)
     {
-        // Create a two-dimensional array that will hold our CSV data
-        String[][] table = null;
-
-        // Now, we're going to further split the rows into individual cells and
-        // determine the width of the table specified in the serialized data
-        int height = rows.size();
-        int width = 0;
-
-        for (int r = 0; r < height; r++)
-        {
-            String row = rows.get(r);
-            String[] cells = row.split(H_SEP);
-
-            if (width == 0)
-            {
-                table = new String[cells.length][height];
-            }
-
-            int length = cells.length;
-            for (int c = 0; c < length; c++)
-            {
-                table[c][r] = cells[c];
-            }
-        }
-
-        // Create an Instrument object and fill in the data from the two-
-        // dimensional array
+        CSVParser parser = new CSVParser();
         Instrument instrument = new Instrument();
 
-        for (int c = 0; c < width; c++)
+        try
         {
-            String attribute = table[c][0];
-
-            // Infer the data type from the arrangement of data in the cells
-            if (table[c].length > 2)
+            for (String row : rows)
             {
-                // There is content in the third row, meaning that there is an
-                // array of items; we need to extract an arraylist of items
-                ArrayList<String> value = new ArrayList<String>();
-                for (int r = 1; r < height; r++)
-                {
-                    String raw = table[c][r];
-                    value.add((raw.equals("null")) ? null : raw);
-                }
+                String[] cells = parser.parseLine(row);
+                String attribute = cells[0];
 
-                try
+                if ("History".equals(attribute))
                 {
-                    //instrument.set(attribute, value);
-                    //TODO fix history handling
-                } catch (Exception ex)
-                {
-                    
+                    List<String> history = Arrays.asList(cells);
+                    history.remove(0);
+                    instrument.setHistory(history);
                 }
-            }
-            else
-            {
-                // There's only one value for the field--there is just a string
-                // for this field
-                String value = table[c][1];
-                try
+                else
                 {
-                    instrument.set(attribute, (value.equals("null") ? null : value));
-                } catch (Exception ex)
-                {
-                    
+                    String value = cells[1];
+                    instrument.set(attribute, value);
                 }
             }
         }
-
-        return instrument;
+        catch (Exception e) {}
+        finally
+        {
+            return instrument;
+        }
     }
 
     /**
@@ -292,23 +252,19 @@ public class InstrumentFileStore extends InstrumentStore
                     lines.add(line);
                 }
             }
-        } catch (FileNotFoundException ex)
-        {
-            
-        } catch (IOException ex)
-        {
+        } catch (FileNotFoundException ex) {
+        } catch (IOException ex) {
         } finally
         {
+            // Make sure that the file reader is closed down properly
             try
             {
                 reader.close();
-            } catch (IOException ex)
-            {
-            }
+            } catch (IOException ex) {}
         }
 
         // Return the file after it has been parsed into an Instrument
-        return unserialize(lines);
+        return parse(lines);
     }
 
     /**
