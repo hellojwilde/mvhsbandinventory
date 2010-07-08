@@ -99,19 +99,7 @@ public class InstrumentFileStore extends InstrumentStore
         return prepare(instrument, Instrument.attributes, true);
     }
 
-    /**
-     * Parse the data serialized in CSV format (presumably with the
-     * InstrumentFileStore.serialize method) into an Instrument object.  See the
-     * documentation for the InstrumentFileStore.serialize method for more
-     * details on the serialization format for the CSV file.
-     *
-     * Note that this function will only correctly unserialize data created with
-     * the serialize function if the serialize function is set up to not omit
-     * headings.
-     * @param csv-serialized instrument
-     * @return instrument object
-     */
-    public static Instrument unserialize(List<String> rows)
+    public static Instrument parse(List<String> rows)
     {
         // Create a two-dimensional array that will hold our CSV data
         String[][] table = null;
