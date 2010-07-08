@@ -254,7 +254,7 @@ public class InstrumentList extends AbstractTableModel
 
     public int getRowCount()
     {
-        return Math.max(list.size(), 1);
+        return list.size();
     }
 
     @Override
