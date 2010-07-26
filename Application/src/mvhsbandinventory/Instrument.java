@@ -14,7 +14,6 @@ import java.util.Map;
  */
 public class Instrument
 {
-    public static final Instrument NULL_INSTRUMENT = new Instrument();
     private Map<String,String> properties = new HashMap<String,String>();
     private List<String> history = new ArrayList<String>();
 
@@ -30,17 +29,16 @@ public class Instrument
     public static final List<String> attributeList = Arrays.asList(attributes);
     public static final int attributesLength = attributes.length;
 
+    public static final Instrument NULL_INSTRUMENT = new Instrument();
+
     /**
      * Constructor for an instrument without any properties.
      */
     public Instrument ()
     {
-        for(String s: attributes)
+        for (String s : attributeList)
         {
-            try
-            {
-                set(s, "");
-            } catch(Exception ex) {}
+           properties.put(s, "");
         }
     }
 
